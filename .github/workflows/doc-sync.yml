@@ -1,0 +1,36 @@
+name: Sync API Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/routes/**'
+
+jobs:
+  trigger-devin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install requests
+
+      - name: Get changed route files
+        id: diff
+        run: |
+          echo "files=$(git diff --name-only HEAD~1 HEAD -- 'app/routes/**' | tr '\n' ',')" >> $GITHUB_OUTPUT
+
+      - name: Trigger Devin doc-sync session
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          DEVIN_ORG_ID: ${{ secrets.DEVIN_ORG_ID }}
+          DEVIN_PLAYBOOK_ID: ${{ secrets.DEVIN_PLAYBOOK_ID }}
+          CHANGED_FILES: ${{ steps.diff.outputs.files }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: python scripts/trigger_devin.py
