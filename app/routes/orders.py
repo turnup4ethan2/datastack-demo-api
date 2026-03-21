@@ -16,8 +16,6 @@ class OrderCreate(BaseModel):
     items: list[OrderItem]
     shipping_address: str
     promo_code: Optional[str] = None
-    gift_message: Optional[str] = None   # NEW: attach a gift message to the order
-    priority_shipping: bool = False     # NEW: priority shipping
 
 
 class OrderStatusUpdate(BaseModel):
@@ -33,7 +31,6 @@ class OrderResponse(BaseModel):
     status: str
     total_cents: int
     promo_code: Optional[str]
-    gift_message: Optional[str]
     tracking_number: Optional[str]
     created_at: str
     updated_at: str
