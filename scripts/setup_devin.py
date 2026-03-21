@@ -125,6 +125,35 @@ def create_knowledge_note(headers: dict) -> str:
     return note_id
 
 
+def create_schedule(headers: dict, playbook_id: str) -> str:
+    url = f"{BASE_URL}/v3/organizations/{DEVIN_ORG_ID}/schedules"
+    payload = {
+        "name": "Nightly API doc sweep",
+        "prompt": (
+            "Perform a full documentation audit of the datastack-demo-api repository "
+            "(https://github.com/turnup4ethan2/datastack-demo-api).\n\n"
+            "Read every file in app/routes/ and compare against the current docs/api-reference.md. "
+            "Update docs/api-reference.md to accurately reflect ALL current endpoints and open a "
+            "draft PR titled \"docs: auto-update API reference\" with a summary table of every "
+            "discrepancy found.\n\n"
+            "This is a scheduled sweep — check everything, not just recently changed files. "
+            "If docs are already accurate, do not open a PR."
+        ),
+        "playbook_id": playbook_id,
+        "frequency": "0 2 * * *",   # nightly at 2am UTC
+        "timezone": "America/Los_Angeles",
+    }
+    print("Creating nightly schedule...")
+    resp = requests.post(url, json=payload, headers=headers, timeout=30)
+    if resp.status_code not in (200, 201):
+        print(f"ERROR creating schedule: {resp.status_code} {resp.text}", file=sys.stderr)
+        sys.exit(1)
+    data = resp.json()
+    schedule_id = data.get("scheduled_session_id") or data.get("id")
+    print(f"  Schedule created: {schedule_id} (nightly at 2am Pacific)")
+    return schedule_id
+
+
 def main():
     for var, name in [(DEVIN_API_KEY, "DEVIN_API_KEY"), (DEVIN_ORG_ID, "DEVIN_ORG_ID")]:
         if not var:
@@ -138,20 +167,19 @@ def main():
 
     playbook_id = create_playbook(headers)
     knowledge_id = create_knowledge_note(headers)
+    schedule_id = create_schedule(headers, playbook_id)
 
     print()
     print("=" * 60)
     print("Setup complete. Add these as GitHub repository secrets:")
     print("=" * 60)
-    print(f"  DEVIN_API_KEY    = (your existing key)")
-    print(f"  DEVIN_ORG_ID     = {DEVIN_ORG_ID}")
+    print(f"  DEVIN_API_KEY     = (your existing key)")
+    print(f"  DEVIN_ORG_ID      = {DEVIN_ORG_ID}")
     print(f"  DEVIN_PLAYBOOK_ID = {playbook_id}")
     print()
-    print("Knowledge note ID (for reference):")
-    print(f"  {knowledge_id}")
-    print()
-    print("Knowledge notes are automatically applied to all org sessions.")
-    print("No additional configuration needed for the knowledge note.")
+    print("Also created (no action needed):")
+    print(f"  Knowledge note : {knowledge_id} — auto-applied to all org sessions")
+    print(f"  Nightly schedule: {schedule_id} — full doc sweep at 2am Pacific every night")
 
 
 if __name__ == "__main__":
