@@ -108,10 +108,11 @@ def create_playbook(headers: dict) -> str:
 
 
 def create_knowledge_note(headers: dict) -> str:
-    url = f"{BASE_URL}/v3/organizations/{DEVIN_ORG_ID}/knowledge"
+    url = f"{BASE_URL}/v3/organizations/{DEVIN_ORG_ID}/knowledge/notes"
     payload = {
-        "title": KNOWLEDGE_NOTE_NAME,
+        "name": KNOWLEDGE_NOTE_NAME,
         "body": KNOWLEDGE_NOTE_CONTENT,
+        "trigger": "When working on the datastack-demo-api repository or updating docs/api-reference.md",
     }
     print(f"Creating knowledge note '{KNOWLEDGE_NOTE_NAME}'...")
     resp = requests.post(url, json=payload, headers=headers, timeout=30)
