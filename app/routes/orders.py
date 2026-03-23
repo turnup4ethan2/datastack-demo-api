@@ -17,6 +17,7 @@ class OrderCreate(BaseModel):
     shipping_address: str
     promo_code: Optional[str] = None
     priority_shipping: bool = False
+    gift_message: Optional[str] = None
 
 
 class OrderStatusUpdate(BaseModel):
