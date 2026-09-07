@@ -16,11 +16,7 @@ Requests without the header are rejected with `422 Unprocessable Entity` (missin
 
 ## Health
 
-### Health Check
-
-```
-GET /health
-```
+### `GET` `/health` — Health Check
 
 Returns the service liveness status. No authentication required.
 
@@ -44,11 +40,7 @@ curl https://api.datastack.io/health
 
 ## Users
 
-### List Users
-
-```
-GET /users
-```
+### `GET` `/users` — List Users
 
 Returns all users in the given organization.
 
@@ -93,11 +85,7 @@ curl "https://api.datastack.io/users?organization_id=org_xyz" \
 
 ---
 
-### Create User
-
-```
-POST /users
-```
+### `POST` `/users` — Create User
 
 Creates a new user. Requires admin role on the organization.
 
@@ -112,7 +100,16 @@ Creates a new user. Requires admin role on the organization.
 | role            | string | No       | `"admin"`, `"member"`, or `"viewer"`. Default `"member"` |
 | organization_id | string | Yes      | Organization to add the user to                      |
 
-**Response** — `201 Created` — User object (see [List Users](#list-users) for fields)
+```json
+{
+  "email": "alice@datastack.io",
+  "name": "Alice",
+  "role": "member",
+  "organization_id": "org_xyz"
+}
+```
+
+**Response** — `201 Created` — User object (see List Users for fields)
 
 ```json
 {
@@ -136,11 +133,7 @@ curl -X POST https://api.datastack.io/users \
 
 ---
 
-### Get User
-
-```
-GET /users/{user_id}
-```
+### `GET` `/users/{user_id}` — Get User
 
 Fetches a single user by ID.
 
@@ -152,7 +145,7 @@ Fetches a single user by ID.
 |-----------|--------|----------|-------------|
 | user_id   | string | Yes      | User ID     |
 
-**Response** — `200 OK` — User object (see [List Users](#list-users) for fields)
+**Response** — `200 OK` — User object (see List Users for fields)
 
 ```json
 {
@@ -174,11 +167,7 @@ curl https://api.datastack.io/users/usr_abc123 \
 
 ---
 
-### Delete User
-
-```
-DELETE /users/{user_id}
-```
+### `DELETE` `/users/{user_id}` — Delete User
 
 Permanently deletes a user. You cannot delete your own account.
 
@@ -203,11 +192,7 @@ curl -X DELETE https://api.datastack.io/users/usr_abc123 \
 
 ## Products
 
-### List Products
-
-```
-GET /products
-```
+### `GET` `/products` — List Products
 
 Lists all products in the catalog, optionally filtered by tag.
 
@@ -256,11 +241,7 @@ curl "https://api.datastack.io/products?tag=featured" \
 
 ---
 
-### Create Product
-
-```
-POST /products
-```
+### `POST` `/products` — Create Product
 
 Creates a new product in the catalog.
 
@@ -277,7 +258,18 @@ Creates a new product in the catalog.
 | inventory_count | integer  | No       | Units in stock. Default `0`        |
 | tags            | string[] | No       | Tags. Default `[]`                 |
 
-**Response** — `201 Created` — Product object (see [List Products](#list-products) for fields)
+```json
+{
+  "name": "Widget Pro",
+  "description": "Our best-selling widget.",
+  "price_cents": 4999,
+  "sku": "WGT-PRO-001",
+  "inventory_count": 142,
+  "tags": ["hardware", "featured"]
+}
+```
+
+**Response** — `201 Created` — Product object (see List Products for fields)
 
 ```json
 {
@@ -303,11 +295,7 @@ curl -X POST https://api.datastack.io/products \
 
 ---
 
-### Get Product
-
-```
-GET /products/{product_id}
-```
+### `GET` `/products/{product_id}` — Get Product
 
 Fetches a single product by ID.
 
@@ -319,7 +307,7 @@ Fetches a single product by ID.
 |------------|--------|----------|-------------|
 | product_id | string | Yes      | Product ID  |
 
-**Response** — `200 OK` — Product object (see [List Products](#list-products) for fields)
+**Response** — `200 OK` — Product object (see List Products for fields)
 
 ```json
 {
@@ -372,11 +360,7 @@ Used in order requests and responses.
 
 ---
 
-### Create Order
-
-```
-POST /orders
-```
+### `POST` `/orders` — Create Order
 
 Places a new order. Inventory is reserved immediately; payment is captured asynchronously. Returns the order in `pending` status.
 
@@ -392,6 +376,17 @@ Places a new order. Inventory is reserved immediately; payment is captured async
 | promo_code        | string      | No       | Promo code. Default `null`                   |
 | priority_shipping | boolean     | No       | Request priority shipping. Default `false`   |
 | gift_message      | string      | No       | Gift message to include. Default `null`      |
+
+```json
+{
+  "user_id": "usr_abc123",
+  "items": [{ "product_id": "prod_001", "quantity": 2, "unit_price_cents": 4999 }],
+  "shipping_address": "123 Main St, San Francisco, CA 94105",
+  "promo_code": null,
+  "priority_shipping": true,
+  "gift_message": "Happy birthday!"
+}
+```
 
 > `priority_shipping` and `gift_message` are accepted on creation but are not returned in the Order object.
 
@@ -423,11 +418,7 @@ curl -X POST https://api.datastack.io/orders \
 
 ---
 
-### Get Order
-
-```
-GET /orders/{order_id}
-```
+### `GET` `/orders/{order_id}` — Get Order
 
 Fetches a single order by ID. Users can only fetch their own orders.
 
@@ -465,11 +456,7 @@ curl https://api.datastack.io/orders/ord_001 \
 
 ---
 
-### Update Order Status
-
-```
-PATCH /orders/{order_id}/status
-```
+### `PATCH` `/orders/{order_id}/status` — Update Order Status
 
 Updates the status of an order. Only admins can transition to `confirmed`, `shipped`, or `delivered`. Users may cancel their own `pending` orders.
 
@@ -487,6 +474,13 @@ Updates the status of an order. Only admins can transition to `confirmed`, `ship
 |-----------------|--------|----------|---------------------------------------------------------------------------|
 | status          | string | Yes      | `"pending"`, `"confirmed"`, `"shipped"`, `"delivered"`, or `"cancelled"` |
 | tracking_number | string | No       | Carrier tracking number. Default `null`                                   |
+
+```json
+{
+  "status": "shipped",
+  "tracking_number": "1Z999AA10123456784"
+}
+```
 
 **Response** — `200 OK` — Order object
 
