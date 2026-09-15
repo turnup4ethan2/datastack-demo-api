@@ -114,6 +114,10 @@ Creates a new user. Requires admin role on the organization.
 | role            | string | No       | `admin`, `member`, or `viewer`. Default: `member`    |
 | organization_id | string | Yes      | Organization the user belongs to                     |
 
+```json
+{ "email": "alice@datastack.io", "name": "Alice", "role": "member", "organization_id": "org_xyz" }
+```
+
 **Response** — `201 Created`, a [User object](#user-object)
 
 ```json
@@ -281,6 +285,10 @@ Creates a new product in the catalog.
 | inventory_count | integer       | No       | Units in stock. Default: `0`       |
 | tags            | array[string] | No       | Tags. Default: `[]`                |
 
+```json
+{ "name": "Widget Pro", "description": "Our best-selling widget.", "price_cents": 4999, "sku": "WGT-PRO-001", "inventory_count": 142, "tags": ["hardware", "featured"] }
+```
+
 **Response** — `201 Created`, a [Product object](#product-object)
 
 ```json
@@ -393,6 +401,17 @@ Places a new order. Inventory is reserved immediately; payment is captured async
 | priority_shipping | boolean           | No       | Request priority shipping. Default: `false`   |
 | gift_message      | string            | No       | Gift message to include. Default: `null`      |
 
+```json
+{
+  "user_id": "usr_abc123",
+  "items": [{ "product_id": "prod_001", "quantity": 2, "unit_price_cents": 4999 }],
+  "shipping_address": "123 Main St, San Francisco, CA 94105",
+  "promo_code": null,
+  "priority_shipping": true,
+  "gift_message": "Happy birthday!"
+}
+```
+
 > `priority_shipping` and `gift_message` are accepted on creation but are not returned in the Order object.
 
 **Response** — `201 Created`, an [Order object](#order-object)
@@ -487,6 +506,10 @@ Updates the status of an order. Only admins can transition to `confirmed`, `ship
 |-----------------|--------|----------|----------------------------------------------------------------------|
 | status          | string | Yes      | One of `pending`, `confirmed`, `shipped`, `delivered`, `cancelled`   |
 | tracking_number | string | No       | Carrier tracking number. Default: `null`                             |
+
+```json
+{ "status": "shipped", "tracking_number": "1Z999AA10123456784" }
+```
 
 **Response** — `200 OK`, an [Order object](#order-object)
 
