@@ -566,7 +566,7 @@ Validation errors (`422`) return:
 ```json
 {
   "detail": [
-    {"loc": ["body", "price_cents"], "msg": "Input should be a valid integer", "type": "int_parsing"}
+    {"loc": ["body", "price_cents"], "msg": "Input should be a valid integer, unable to parse string as an integer", "type": "int_parsing"}
   ]
 }
 ```
