@@ -39,7 +39,7 @@ Liveness check. Returns `ok` when the service is running.
 **Curl example**
 
 ```bash
-curl https://api.datastack.io/health
+curl http://localhost:8000/health
 ```
 
 ---
@@ -87,7 +87,7 @@ Return all users in the given organization.
 **Curl example**
 
 ```bash
-curl "https://api.datastack.io/users?organization_id=org_xyz" \
+curl "http://localhost:8000/users?organization_id=org_xyz" \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -133,7 +133,7 @@ Create a new user. Requires the `admin` role on the organization.
 **Curl example**
 
 ```bash
-curl -X POST https://api.datastack.io/users \
+curl -X POST http://localhost:8000/users \
   -H "Authorization: Bearer $DATASTACK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"email": "alice@datastack.io", "name": "Alice", "role": "member", "organization_id": "org_xyz"}'
@@ -169,7 +169,7 @@ Fetch a single user by ID.
 **Curl example**
 
 ```bash
-curl https://api.datastack.io/users/usr_abc123 \
+curl http://localhost:8000/users/usr_abc123 \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -192,7 +192,7 @@ Permanently delete a user. You cannot delete your own account.
 **Curl example**
 
 ```bash
-curl -X DELETE https://api.datastack.io/users/usr_abc123 \
+curl -X DELETE http://localhost:8000/users/usr_abc123 \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -245,7 +245,7 @@ List all products. Optionally filter by tag.
 **Curl example**
 
 ```bash
-curl "https://api.datastack.io/products?tag=featured" \
+curl "http://localhost:8000/products?tag=featured" \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -297,7 +297,7 @@ Create a new product in the catalog.
 **Curl example**
 
 ```bash
-curl -X POST https://api.datastack.io/products \
+curl -X POST http://localhost:8000/products \
   -H "Authorization: Bearer $DATASTACK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "Widget Pro", "description": "Our best-selling widget.", "price_cents": 4999, "sku": "WGT-PRO-001", "inventory_count": 142, "tags": ["hardware", "featured"]}'
@@ -335,7 +335,7 @@ Fetch a single product by ID.
 **Curl example**
 
 ```bash
-curl https://api.datastack.io/products/prod_001 \
+curl http://localhost:8000/products/prod_001 \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -418,7 +418,7 @@ Place a new order. Inventory is reserved immediately and payment is captured asy
 **Curl example**
 
 ```bash
-curl -X POST https://api.datastack.io/orders \
+curl -X POST http://localhost:8000/orders \
   -H "Authorization: Bearer $DATASTACK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"user_id": "usr_abc123", "items": [{"product_id": "prod_001", "quantity": 2, "unit_price_cents": 4999}], "shipping_address": "123 Main St, San Francisco, CA 94105", "promo_code": "SPRING10", "priority_shipping": true, "gift_message": "Happy birthday!"}'
@@ -460,7 +460,7 @@ Fetch a single order by ID. Users can only fetch their own orders.
 **Curl example**
 
 ```bash
-curl https://api.datastack.io/orders/ord_001 \
+curl http://localhost:8000/orders/ord_001 \
   -H "Authorization: Bearer $DATASTACK_TOKEN"
 ```
 
@@ -514,7 +514,7 @@ Update the status of an order. Only admins can transition an order to `confirmed
 **Curl example**
 
 ```bash
-curl -X PATCH https://api.datastack.io/orders/ord_001/status \
+curl -X PATCH http://localhost:8000/orders/ord_001/status \
   -H "Authorization: Bearer $DATASTACK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status": "shipped", "tracking_number": "1Z999AA10123456784"}'
